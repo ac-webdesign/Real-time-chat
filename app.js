@@ -2,7 +2,6 @@ const express = require('express');
 const http = require('http'); // To create the HTTP server
 const { Server } = require('socket.io'); // Socket.io for real-time functionality
 const cors = require('cors');
-const authRoutes = require('./middleware/authRoutes');
 
 
 
