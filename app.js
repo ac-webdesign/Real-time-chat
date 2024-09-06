@@ -3,18 +3,7 @@ const http = require('http'); // To create the HTTP server
 const { Server } = require('socket.io'); // Socket.io for real-time functionality
 const cors = require('cors');
 const authRoutes = require('./middleware/authRoutes');
-const mongoose = require('mongoose');
 
-
-mongoose.connect('mongodb://localhost:27017/chat', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000
-}).then(() => {
-  console.log('Connected to MongoDB');
-}).catch(err => {
-  console.error('Error connecting to MongoDB:', err);
-});
 
 
 // Initialize the app and HTTP server
