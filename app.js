@@ -7,17 +7,38 @@ const cors = require('cors');
 const app = express();
 const server = http.createServer(app);
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://alex-chat.netlify.app',
+  'https://real-time-chat-qgos.onrender.com'
+];
+
+// Middleware
+app.use(express.json());
+app.use(cors({
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) { // Allow localhost for local testing
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ["GET", "POST"]
+}));
+
 // Set up Socket.io
 const io = new Server(server, {
   cors: {
-    origin: "https://alex-chat.netlify.app/", // Allow frontend to connect
+    origin: (origin, callback) => {
+      if (allowedOrigins.includes(origin) || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ["GET", "POST"]
   }
 });
-
-// Middleware
-app.use(cors());
-app.use(express.json());
 
 // Sample route to test server
 app.get('/', (req, res) => {
