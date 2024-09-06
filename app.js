@@ -50,26 +50,48 @@ const io = new Server(server, {
 app.get('/', (req, res) => {
   res.send('Server is running');
 });
+const onlineUsers = new Map(); // Change to Map for easier user management
 
-// Handle socket.io connections
 io.on('connection', (socket) => {
-  console.log('A user connected:', socket.id);
+  console.log(`User connected: ${socket.id}`);
 
-  // Listen for messages from clients
+  socket.on('user_connected', (username) => {
+    // console.log(`User ${username} connected`);
+      onlineUsers.set(socket.id, username);
+      io.emit('update_online_users', Array.from(onlineUsers.values()));
+      // Emit a system message when a user connects
+      io.emit('receive_message', {
+        content: `${username} has joined the chat`,
+        id: 'system',
+        username: 'System',
+        timestamp: new Date().toISOString()
+      });
+  });
+
   socket.on('send_message', (data) => {
     console.log('Message received:', data);
     io.emit('receive_message', data); // Broadcast message to all clients
   });
 
-  // Handle disconnection
   socket.on('disconnect', () => {
-    console.log('A user disconnected:', socket.id);
+    const username = onlineUsers.get(socket.id);
+    if (username) {
+      console.log(`User ${username} disconnected`);
+      onlineUsers.delete(socket.id);
+      io.emit('update_online_users', Array.from(onlineUsers.values()));
+      // Emit a system message when a user disconnects
+      io.emit('receive_message', {
+        content: `${username} has left the chat`,
+        id: 'system',
+        username: 'System',
+        timestamp: new Date().toISOString()
+      });
+    }
   });
 });
 
 // Start the server
-// const PORT = process.env.PORT || 5000;
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
