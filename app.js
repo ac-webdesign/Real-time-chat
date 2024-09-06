@@ -16,8 +16,6 @@ const allowedOrigins = [
   'https://real-time-chat-qgos.onrender.com'
 ];
 
-// //auth routes
-app.use('/auth', authRoutes);
 
 // Middleware
 app.use(express.json());
